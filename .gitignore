@@ -1,0 +1,5 @@
+data/*.db
+output/
+config.local.php
+*.log
+*.tmp

@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mariage Shekina & Ruth — Enregistrement des invités</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,500&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          sage: { 50:'#f4f5f0', 100:'#e6e9dc', 200:'#dadfd0', 300:'#c6cdb6', 400:'#aab296' },
+          olive: { 500:'#8f7748', 600:'#7c6842', 700:'#6a5936', 800:'#544731' },
+        },
+        fontFamily: {
+          display: ['"Playfair Display"', 'serif'],
+          body: ['"Cormorant Garamond"', 'serif'],
+        }
+      }
+    }
+  }
+</script>
+<style>
+  body{ background:#dadfd0; }
+  .divider-flourish::before, .divider-flourish::after{
+    content:''; flex:1; height:1px; background:linear-gradient(90deg,transparent,#a3926b,transparent);
+  }
+</style>
+</head>
+<body class="min-h-screen font-body text-olive-800">
+
+<div class="max-w-xl mx-auto px-5 py-10 sm:py-16">
+
+  <!-- En-tête -->
+  <div class="text-center mb-10">
+    <p class="uppercase tracking-[0.35em] text-xs text-olive-500 mb-3">Vous êtes convié·e</p>
+    <h1 class="font-display text-4xl sm:text-5xl text-olive-800 leading-tight">Shekina <span class="italic font-normal text-3xl sm:text-4xl">&amp;</span> Ruth</h1>
+    <div class="flex items-center gap-3 mt-5 mb-3 px-10 divider-flourish">
+      <span class="text-olive-500 text-lg">✦</span>
+    </div>
+    <p class="text-lg text-olive-600">Enregistrez votre présence et récupérez votre invitation</p>
+  </div>
+
+  <!-- Carte formulaire -->
+  <div id="formCard" class="bg-white/70 backdrop-blur border border-sage-300 rounded-2xl shadow-sm p-6 sm:p-8">
+
+    <form id="registerForm" class="space-y-5">
+
+      <div>
+        <label class="block text-sm uppercase tracking-wide text-olive-600 mb-2">1. Choisissez d'abord votre table</label>
+        <select id="table_numero" required
+          class="w-full rounded-lg border border-sage-300 bg-white px-4 py-3 text-lg focus:outline-none focus:ring-2 focus:ring-olive-500">
+          <option value="">Chargement des tables…</option>
+        </select>
+        <p id="tableHint" class="text-xs text-olive-500 mt-1"></p>
+      </div>
+
+      <div>
+        <label class="block text-sm uppercase tracking-wide text-olive-600 mb-2">2. Vous êtes…</label>
+        <div class="grid grid-cols-3 gap-2">
+          <button type="button" data-type="simple" data-civ="M" class="type-btn border border-sage-300 rounded-lg py-3 text-base hover:border-olive-500">Monsieur</button>
+          <button type="button" data-type="simple" data-civ="Mme" class="type-btn border border-sage-300 rounded-lg py-3 text-base hover:border-olive-500">Madame</button>
+          <button type="button" data-type="couple" data-civ="Couple" class="type-btn border border-sage-300 rounded-lg py-3 text-base hover:border-olive-500">Couple</button>
+        </div>
+        <input type="hidden" id="type" required>
+        <input type="hidden" id="civilite">
+      </div>
+
+      <div>
+        <label class="block text-sm uppercase tracking-wide text-olive-600 mb-2" id="nomLabel">3. Nom complet</label>
+        <input type="text" id="nom" required placeholder="Ex : Jean KABEYA"
+          class="w-full rounded-lg border border-sage-300 bg-white px-4 py-3 text-lg focus:outline-none focus:ring-2 focus:ring-olive-500">
+        <p id="nomHint" class="text-xs text-olive-500 mt-1">Pour un couple, indiquez les deux noms — ex : « Jean KABEYA & Marie MBUYI »</p>
+      </div>
+
+      <p id="errorMsg" class="text-sm text-red-600 hidden"></p>
+
+      <button type="submit"
+        class="w-full bg-olive-600 hover:bg-olive-700 text-white rounded-lg py-3.5 text-lg font-medium tracking-wide transition">
+        Enregistrer mon invitation
+      </button>
+    </form>
+  </div>
+
+  <!-- Carte succès -->
+  <div id="successCard" class="hidden bg-white/80 backdrop-blur border border-sage-300 rounded-2xl shadow-sm p-8 text-center">
+    <p class="text-olive-500 text-sm uppercase tracking-widest mb-2">C'est confirmé</p>
+    <h2 class="font-display text-2xl text-olive-800 mb-1" id="successName"></h2>
+    <p class="text-olive-600 mb-6" id="successTable"></p>
+
+    <div class="flex flex-col gap-3">
+      <a id="downloadBtn" href="#" download
+        class="w-full bg-olive-600 hover:bg-olive-700 text-white rounded-lg py-3.5 text-lg font-medium transition">
+        Télécharger mon invitation (PDF)
+      </a>
+      <button id="whatsappBtn"
+        class="w-full border border-olive-500 text-olive-700 hover:bg-olive-50 rounded-lg py-3.5 text-lg font-medium transition flex items-center justify-center gap-2">
+        Envoyer sur WhatsApp
+      </button>
+      <button id="newRegisterBtn" class="text-sm text-olive-500 underline mt-2">Enregistrer un autre invité</button>
+    </div>
+    <p id="waNote" class="text-xs text-olive-500 mt-4 hidden"></p>
+  </div>
+
+  <p class="text-center text-xs text-olive-500 mt-10">Avec toute notre affection — Shekina &amp; Ruth</p>
+</div>
+
+<script>
+const tableSelect = document.getElementById('table_numero');
+const tableHint = document.getElementById('tableHint');
+let tablesData = [];
+
+async function loadTables(selectedTable = null) {
+  const res = await fetch('api/tables.php');
+  const data = await res.json();
+  tablesData = data.tables;
+  renderTableOptions(selectedTable);
+}
+
+function invitationFilename(payload) {
+  if (payload.filename) return payload.filename;
+  const cleanName = (payload.nom || 'invite').trim().replace(/[\/\\:*?"<>|]/g, '');
+  return `Invitation de ${cleanName || 'invite'}.pdf`;
+}
+
+function renderTableOptions(selectedTable = null) {
+  const type = document.getElementById('type').value || 'simple';
+  const needed = type === 'couple' ? 2 : 1;
+  const current = selectedTable || tableSelect.value;
+  tableSelect.innerHTML = '';
+  const optDefault = document.createElement('option');
+  optDefault.value = ''; optDefault.textContent = 'Sélectionnez une table…';
+  tableSelect.appendChild(optDefault);
+
+  tablesData.forEach(t => {
+    const opt = document.createElement('option');
+    opt.value = t.numero;
+    const disabled = t.places_restantes < needed;
+    opt.disabled = disabled;
+    opt.textContent = `Table ${t.numero} — ${t.nom} (${t.places_restantes} place${t.places_restantes>1?'s':''} restante${t.places_restantes>1?'s':''})` + (disabled ? ' — complet' : '');
+    tableSelect.appendChild(opt);
+  });
+  const currentOption = [...tableSelect.options].find(opt => opt.value === String(current));
+  if (currentOption && !currentOption.disabled) tableSelect.value = current;
+  const total = tablesData.reduce((a,t)=>a+t.places_restantes,0);
+  tableHint.textContent = total + ' places restantes au total sur ' + tablesData.length + ' tables.';
+}
+
+document.querySelectorAll('.type-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.type-btn').forEach(b => b.classList.remove('bg-olive-600','text-white','border-olive-600'));
+    btn.classList.add('bg-olive-600','text-white','border-olive-600');
+    document.getElementById('type').value = btn.dataset.type;
+    document.getElementById('civilite').value = btn.dataset.civ;
+    document.getElementById('nomLabel').textContent = btn.dataset.type === 'couple' ? '3. Nom du couple' : '3. Nom complet';
+    document.getElementById('nomHint').classList.toggle('hidden', btn.dataset.type !== 'couple');
+    renderTableOptions();
+  });
+});
+
+let lastPayload = null;
+
+document.getElementById('registerForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const errorMsg = document.getElementById('errorMsg');
+  errorMsg.classList.add('hidden');
+
+  const type = document.getElementById('type').value;
+  if (!type) { errorMsg.textContent = 'Merci de préciser : Monsieur, Madame ou Couple.'; errorMsg.classList.remove('hidden'); return; }
+
+  const payload = {
+    table_numero: document.getElementById('table_numero').value,
+    type: type,
+    civilite: document.getElementById('civilite').value,
+    nom: document.getElementById('nom').value.trim(),
+  };
+  if (!payload.table_numero) { errorMsg.textContent = 'Merci de sélectionner une table.'; errorMsg.classList.remove('hidden'); return; }
+  if (!payload.nom) { errorMsg.textContent = 'Merci de renseigner le nom.'; errorMsg.classList.remove('hidden'); return; }
+
+  const submitBtn = e.target.querySelector('button[type=submit]');
+  submitBtn.disabled = true; submitBtn.textContent = 'Enregistrement…';
+
+  try {
+    const res = await fetch('api/register.php', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload) });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Erreur inconnue');
+
+    lastPayload = { ...payload, id: data.id, invite_url: data.invite_url, filename: data.filename };
+
+    document.getElementById('formCard').classList.add('hidden');
+    const successCard = document.getElementById('successCard');
+    successCard.classList.remove('hidden');
+    document.getElementById('successName').textContent = payload.civilite === 'Couple' ? 'Couple ' + payload.nom : payload.civilite + ' ' + payload.nom;
+    document.getElementById('successTable').textContent = 'Table ' + data.table_numero + ' — ' + data.table_nom;
+    const downloadBtn = document.getElementById('downloadBtn');
+    downloadBtn.href = data.invite_url + '&dl=1';
+    downloadBtn.download = invitationFilename(lastPayload);
+
+  } catch (err) {
+    errorMsg.textContent = err.message;
+    errorMsg.classList.remove('hidden');
+  } finally {
+    submitBtn.disabled = false; submitBtn.textContent = 'Enregistrer mon invitation';
+  }
+});
+
+document.getElementById('whatsappBtn').addEventListener('click', async () => {
+  const waNote = document.getElementById('waNote');
+  if (!lastPayload) return;
+  const pdfUrl = lastPayload.invite_url + '&dl=1';
+  const text = `Voici l'invitation au mariage de Shekina & Ruth pour ${lastPayload.nom} (Table ${lastPayload.table_numero}).`;
+
+  try {
+    const resp = await fetch(pdfUrl);
+    const blob = await resp.blob();
+    const file = new File([blob], invitationFilename(lastPayload), { type: 'application/pdf' });
+
+    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+      await navigator.share({ files: [file], title: 'Invitation au mariage', text });
+      return;
+    }
+  } catch (e) { /* on retombe sur le lien wa.me ci-dessous */ }
+
+  // Repli (ordinateur / navigateurs sans partage de fichiers) :
+  // WhatsApp ne permet pas de joindre un fichier automatiquement via un simple lien,
+  // on ouvre donc la conversation avec un message prêt, et on invite à joindre le PDF téléchargé.
+  window.open('https://wa.me/?text=' + encodeURIComponent(text), '_blank');
+  waNote.textContent = "Astuce : sur mobile, ce bouton ouvre directement le partage WhatsApp avec le PDF joint. Sur ordinateur, téléchargez d'abord le PDF puis joignez-le manuellement dans WhatsApp.";
+  waNote.classList.remove('hidden');
+});
+
+document.getElementById('newRegisterBtn').addEventListener('click', () => {
+  const tableToKeep = lastPayload ? lastPayload.table_numero : tableSelect.value;
+  document.getElementById('successCard').classList.add('hidden');
+  document.getElementById('formCard').classList.remove('hidden');
+  document.getElementById('registerForm').reset();
+  document.querySelectorAll('.type-btn').forEach(b => b.classList.remove('bg-olive-600','text-white','border-olive-600'));
+  document.getElementById('type').value = '';
+  document.getElementById('civilite').value = '';
+  loadTables(tableToKeep);
+});
+
+loadTables();
+</script>
+</body>
+</html>

@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin — Mariage Shekina & Ruth</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,500&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = { theme: { extend: {
+    colors: { sage:{50:'#f4f5f0',100:'#e6e9dc',200:'#dadfd0',300:'#c6cdb6'}, olive:{500:'#8f7748',600:'#7c6842',700:'#6a5936',800:'#544731'} },
+    fontFamily: { display:['"Playfair Display"','serif'], body:['"Cormorant Garamond"','serif'] }
+  }}}
+</script>
+<style>
+  body{ background:#f4f5f0; }
+  @media print {
+    .no-print{ display:none !important; }
+    body{ background:white; }
+    #printArea{ display:block !important; }
+  }
+  #printArea{ display:none; }
+</style>
+</head>
+<body class="font-body text-olive-800">
+
+<!-- Écran de connexion -->
+<div id="loginScreen" class="min-h-screen flex items-center justify-center px-4">
+  <div class="bg-white border border-sage-300 rounded-2xl shadow-sm p-8 w-full max-w-sm text-center">
+    <p class="uppercase tracking-[0.3em] text-xs text-olive-500 mb-2">Espace administrateur</p>
+    <h1 class="font-display text-2xl mb-6">Mariage Shekina &amp; Ruth</h1>
+    <input id="pwdInput" type="password" placeholder="Mot de passe" class="w-full rounded-lg border border-sage-300 px-4 py-3 mb-3 focus:outline-none focus:ring-2 focus:ring-olive-500">
+    <button id="loginBtn" class="w-full bg-olive-600 hover:bg-olive-700 text-white rounded-lg py-3 font-medium">Se connecter</button>
+    <p id="loginError" class="text-red-600 text-sm mt-3 hidden">Mot de passe incorrect.</p>
+  </div>
+</div>
+
+<!-- Tableau de bord -->
+<div id="dashboard" class="hidden max-w-6xl mx-auto px-4 sm:px-6 py-8">
+
+  <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-6 no-print">
+    <div>
+      <p class="uppercase tracking-[0.3em] text-xs text-olive-500 mb-1">Espace administrateur</p>
+      <h1 class="font-display text-3xl">Liste des invités</h1>
+    </div>
+    <div class="flex flex-wrap gap-2">
+      <button onclick="window.print()" class="border border-olive-500 text-olive-700 hover:bg-olive-50 rounded-lg px-4 py-2 text-sm">🖨️ Imprimer la liste</button>
+      <a href="api/tables_list_pdf.php" class="border border-olive-500 text-olive-700 hover:bg-olive-50 rounded-lg px-4 py-2 text-sm">📋 Liste des tables (PDF)</a>
+      <a href="api/zip_all.php" class="bg-olive-600 hover:bg-olive-700 text-white rounded-lg px-4 py-2 text-sm">⬇️ Toutes les invitations (ZIP)</a>
+    </div>
+  </div>
+
+  <!-- Statistiques -->
+  <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6 no-print">
+    <div class="bg-white border border-sage-300 rounded-xl p-4 text-center">
+      <p class="text-2xl font-display" id="statTotal">0</p>
+      <p class="text-xs uppercase tracking-wide text-olive-500">Invités enregistrés</p>
+    </div>
+    <div class="bg-white border border-sage-300 rounded-xl p-4 text-center">
+      <p class="text-2xl font-display" id="statPresent">0</p>
+      <p class="text-xs uppercase tracking-wide text-olive-500">Présents cochés</p>
+    </div>
+    <div class="bg-white border border-sage-300 rounded-xl p-4 text-center">
+      <p class="text-2xl font-display" id="statSeats">0/250</p>
+      <p class="text-xs uppercase tracking-wide text-olive-500">Places occupées</p>
+    </div>
+    <div class="bg-white border border-sage-300 rounded-xl p-4 text-center">
+      <p class="text-2xl font-display" id="statTablesFull">0</p>
+      <p class="text-xs uppercase tracking-wide text-olive-500">Tables complètes</p>
+    </div>
+  </div>
+
+  <!-- Filtres -->
+  <div class="flex flex-col sm:flex-row gap-3 mb-4 no-print">
+    <input id="searchInput" type="text" placeholder="Rechercher un nom…" class="flex-1 rounded-lg border border-sage-300 px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-olive-500">
+    <select id="tableFilter" class="rounded-lg border border-sage-300 px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-olive-500">
+      <option value="">Toutes les tables</option>
+    </select>
+  </div>
+
+  <!-- Table à l'écran -->
+  <div class="bg-white border border-sage-300 rounded-xl overflow-hidden no-print">
+    <table class="w-full text-left text-sm">
+      <thead class="bg-sage-100 text-olive-600 uppercase text-xs tracking-wide">
+        <tr>
+          <th class="px-3 py-3">Présent</th>
+          <th class="px-3 py-3">Table</th>
+          <th class="px-3 py-3">Civilité</th>
+          <th class="px-3 py-3">Nom</th>
+          <th class="px-3 py-3">Type</th>
+          <th class="px-3 py-3 text-right">Actions</th>
+        </tr>
+      </thead>
+      <tbody id="guestTableBody" class="divide-y divide-sage-100"></tbody>
+    </table>
+    <p id="emptyState" class="hidden text-center text-olive-500 py-10">Aucun invité ne correspond à votre recherche.</p>
+  </div>
+
+  <!-- Version imprimable, propre, groupée par table -->
+  <div id="printArea">
+    <h1 style="font-family: Georgia, serif; text-align:center; margin-bottom:4px;">Mariage Shekina &amp; Ruth — Liste des invités</h1>
+    <p style="text-align:center; color:#666; margin-top:0;">Cochez la présence à l'accueil</p>
+    <div id="printContent"></div>
+  </div>
+</div>
+
+<script>
+let allGuests = [];
+let allTables = [];
+
+function invitationFilename(g) {
+  if (g.filename) return g.filename;
+  const cleanName = (g.nom || 'invite').trim().replace(/[\/\\:*?"<>|]/g, '');
+  return `Invitation de ${cleanName || 'invite'}.pdf`;
+}
+
+async function checkSession() {
+  const res = await fetch('api/list.php');
+  if (res.ok) {
+    document.getElementById('loginScreen').classList.add('hidden');
+    document.getElementById('dashboard').classList.remove('hidden');
+    const data = await res.json();
+    allGuests = data.guests; allTables = data.tables;
+    populateTableFilter();
+    render();
+  } else {
+    document.getElementById('loginScreen').classList.remove('hidden');
+    document.getElementById('dashboard').classList.add('hidden');
+  }
+}
+
+document.getElementById('loginBtn').addEventListener('click', doLogin);
+document.getElementById('pwdInput').addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
+
+async function doLogin() {
+  const password = document.getElementById('pwdInput').value;
+  const res = await fetch('api/login.php', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({password}) });
+  if (res.ok) { checkSession(); }
+  else { document.getElementById('loginError').classList.remove('hidden'); }
+}
+
+function populateTableFilter() {
+  const sel = document.getElementById('tableFilter');
+  sel.innerHTML = '<option value="">Toutes les tables</option>';
+  allTables.forEach(t => {
+    const opt = document.createElement('option');
+    opt.value = t.numero;
+    opt.textContent = `Table ${t.numero} — ${t.nom}`;
+    sel.appendChild(opt);
+  });
+}
+
+function render() {
+  const search = document.getElementById('searchInput').value.trim().toLowerCase();
+  const tableF = document.getElementById('tableFilter').value;
+
+  const filtered = allGuests.filter(g => {
+    if (tableF && String(g.table_numero) !== tableF) return false;
+    if (search && !g.nom.toLowerCase().includes(search)) return false;
+    return true;
+  });
+
+  const tbody = document.getElementById('guestTableBody');
+  tbody.innerHTML = '';
+  document.getElementById('emptyState').classList.toggle('hidden', filtered.length > 0);
+
+  filtered.forEach(g => {
+    const tr = document.createElement('tr');
+    tr.className = 'hover:bg-sage-50';
+    tr.innerHTML = `
+      <td class="px-3 py-2.5">
+        <input type="checkbox" data-id="${g.id}" class="presentCheck w-5 h-5 accent-olive-600" ${g.present ? 'checked' : ''}>
+      </td>
+      <td class="px-3 py-2.5">Table ${g.table_numero}<br><span class="text-xs text-olive-500">${g.table_nom}</span></td>
+      <td class="px-3 py-2.5">${g.civilite}</td>
+      <td class="px-3 py-2.5 font-medium">${g.nom}</td>
+      <td class="px-3 py-2.5 capitalize">${g.type}</td>
+      <td class="px-3 py-2.5 text-right whitespace-nowrap">
+        <a href="api/invite.php?id=${g.id}&dl=1" download="${invitationFilename(g)}" class="text-olive-600 hover:underline mr-3">Télécharger</a>
+        <button data-id="${g.id}" class="whatsappSend text-olive-600 hover:underline mr-3">WhatsApp</button>
+        <button data-id="${g.id}" class="deleteGuest text-red-500 hover:underline">Supprimer</button>
+      </td>
+    `;
+    tbody.appendChild(tr);
+  });
+
+  // Zone imprimable groupée par table
+  const printContent = document.getElementById('printContent');
+  printContent.innerHTML = '';
+  const byTable = {};
+  allGuests.forEach(g => { (byTable[g.table_numero] = byTable[g.table_numero] || []).push(g); });
+  Object.keys(byTable).sort((a,b)=>a-b).forEach(num => {
+    const tableInfo = allTables.find(t => String(t.numero) === num);
+    const tableLabel = tableInfo ? tableInfo.nom : '';
+    const h = document.createElement('h3');
+    h.style.cssText = 'font-family:Georgia,serif;border-bottom:1px solid #999;margin-top:20px;padding-bottom:4px;';
+    h.textContent = `Table ${num}`;
+    printContent.appendChild(h);
+    const table = document.createElement('table');
+    table.style.cssText = 'width:100%; border-collapse:collapse; font-size:17px; margin-bottom:12px;';
+    table.innerHTML = `<tr style="text-align:left; color:#555;"><th style="width:50px; padding:6px 4px;">✔</th><th style="padding:6px 4px;">Civilité</th><th style="padding:6px 4px;">Nom</th><th style="padding:6px 4px;">Table</th><th style="padding:6px 4px;">Type</th></tr>` +
+      byTable[num].map(g => `<tr style="border-top:1px solid #ddd;">
+        <td style="width:50px; padding:8px 4px; font-size:28px; line-height:1;">☐</td>
+        <td style="padding:8px 4px;">${g.civilite}</td>
+        <td style="padding:8px 4px;">${g.nom}</td>
+        <td style="padding:8px 4px;">Table ${num} — ${tableLabel}</td>
+        <td style="padding:8px 4px; text-transform:capitalize;">${g.type}</td>
+      </tr>`).join('');
+    printContent.appendChild(table);
+  });
+
+  updateStats();
+}
+
+function updateStats() {
+  document.getElementById('statTotal').textContent = allGuests.length;
+  document.getElementById('statPresent').textContent = allGuests.filter(g => g.present).length;
+  const seats = allGuests.reduce((a,g) => a + g.places, 0);
+  document.getElementById('statSeats').textContent = seats + '/' + (allTables.length * 10);
+  document.getElementById('statTablesFull').textContent = allTables.filter(t => t.complet).length + '/' + allTables.length;
+}
+
+document.getElementById('searchInput').addEventListener('input', render);
+document.getElementById('tableFilter').addEventListener('change', render);
+
+document.getElementById('guestTableBody').addEventListener('click', async (e) => {
+  if (e.target.classList.contains('presentCheck')) {
+    const id = e.target.dataset.id;
+    await fetch('api/toggle_presence.php', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({id}) });
+    const g = allGuests.find(x => String(x.id) === id);
+    if (g) g.present = e.target.checked ? 1 : 0;
+    updateStats();
+  }
+  if (e.target.classList.contains('deleteGuest')) {
+    const id = e.target.dataset.id;
+    const g = allGuests.find(x => String(x.id) === id);
+    if (!confirm(`Supprimer ${g ? g.nom : 'cet invité'} de la base de données ?`)) return;
+    const res = await fetch('api/delete.php', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({id}) });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) {
+      alert(data.error || 'Impossible de supprimer cet invité.');
+      return;
+    }
+    allGuests = allGuests.filter(x => String(x.id) !== id);
+    if (data.tables) allTables = data.tables;
+    render();
+  }
+  if (e.target.classList.contains('whatsappSend')) {
+    const id = e.target.dataset.id;
+    const g = allGuests.find(x => String(x.id) === id);
+    if (!g) return;
+    const pdfUrl = `api/invite.php?id=${id}&dl=1`;
+    try {
+      const resp = await fetch(pdfUrl);
+      const blob = await resp.blob();
+      const file = new File([blob], invitationFilename(g), { type: 'application/pdf' });
+      if (navigator.canShare && navigator.canShare({ files: [file] })) {
+        await navigator.share({ files: [file], title: 'Invitation au mariage', text: `Invitation pour ${g.nom}` });
+        return;
+      }
+    } catch (err) {}
+    window.open('https://wa.me/?text=' + encodeURIComponent(`Invitation au mariage de Shekina & Ruth pour ${g.nom}. Téléchargez le PDF puis joignez-le ici.`), '_blank');
+  }
+});
+
+checkSession();
+</script>
+</body>
+</html>
