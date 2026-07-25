@@ -67,8 +67,8 @@ Un hébergement PHP classique (mutualisé ou VPS) avec :
   par table, avec une case ☐ à cocher à la main le jour J si besoin.
 - **📋 Liste des tables (PDF)** → téléchargement d'un PDF en paysage avec une
   page par table, le nom de la table et la mention "PRIÈRE POUR NOUS" en grand.
-  Si une image existe dans `assets/table_images/table_XX.jpg`, elle est ajoutée
-  à côté du texte.
+  Si une image existe dans `assets/table_images/table_XX.jpg` ou `.png`, elle
+  est ajoutée à côté du texte.
 - **⬇️ Toutes les invitations (ZIP)** → télécharge un fichier ZIP contenant
   le PDF de chaque invité déjà enregistré, nommé automatiquement :
   - `Invitation de <Nom>.pdf`
