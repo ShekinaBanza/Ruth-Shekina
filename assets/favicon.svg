@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <rect width="64" height="64" rx="14" fill="#dadfd0"/>
+  <rect x="5" y="5" width="54" height="54" rx="11" fill="#f8f7f2" stroke="#8f7748" stroke-width="2"/>
+  <circle cx="25" cy="24" r="10" fill="none" stroke="#8f7748" stroke-width="3.2"/>
+  <circle cx="39" cy="24" r="10" fill="none" stroke="#8f7748" stroke-width="3.2"/>
+  <path d="M32 14l2.6 4.9 5.4.9-3.8 3.9.8 5.5-5-2.4-5 2.4.8-5.5-3.8-3.9 5.4-.9L32 14z" fill="#8f7748"/>
+  <text x="32" y="50" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="18" font-weight="700" fill="#544731">S&amp;R</text>
+</svg>
