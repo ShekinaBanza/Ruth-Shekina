@@ -21,7 +21,7 @@ define('DATE_MARIAGE', 'le vendredi 29 août 2026');
 define('LIEU_BENEDICTION', 'Paroisse Saint Paul Carrefour');
 define('HEURE_BENEDICTION', 'À partir de 14h00');
 define('LIEU_RECEPTION', 'Salle : La Contemplation (Route kasapa ref arrêt changalele)');
-define('HEURE_RECEPTION', 'Heure : 19h00');
+define('HEURE_RECEPTION', 'Heure : 18h30');
 define('SIGNATURE', 'Shekina BANZA & Ruth KASONGO');
 
 // ---- Capacité des tables ----

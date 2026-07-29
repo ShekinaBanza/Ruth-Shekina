@@ -101,7 +101,7 @@ class InvitationPDF extends FPDF
 
         // Bloc bénédiction
         $this->SetFont('Times', 'B', 9.2);
-        $this->SetXY($rightX, $y); $this->Cell($rightW, 4.6, $this->tx('Bénédiction religieuse'), 0, 2, 'C'); $y += 4.6;
+        $this->SetXY($rightX, $y); $this->Cell($rightW, 4.6, $this->tx('Bénédiction nuptiale'), 0, 2, 'C'); $y += 4.6;
         $this->SetFont('Times', '', 8.8);
         $this->SetXY($rightX, $y); $this->Cell($rightW, 4.4, $this->tx(LIEU_BENEDICTION), 0, 2, 'C'); $y += 4.4;
         $this->SetXY($rightX, $y); $this->Cell($rightW, 4.4, $this->tx(HEURE_BENEDICTION), 0, 2, 'C'); $y += 5.4;
