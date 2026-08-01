@@ -17,7 +17,7 @@ if (!defined('ADMIN_PASSWORD')) {
 define('MARIAGE_TITRE', 'INVITATION AU MARIAGE');
 define('MARIE1', 'SHEKINA');
 define('MARIE2', 'RUTH');
-define('DATE_MARIAGE', 'le vendredi 29 août 2026');
+define('DATE_MARIAGE', 'le vendredi 28 août 2026');
 define('LIEU_BENEDICTION', 'Paroisse Saint Paul Carrefour');
 define('HEURE_BENEDICTION', 'À partir de 14h00');
 define('LIEU_RECEPTION', 'Salle : La Contemplation (Route kasapa ref arrêt changalele)');
